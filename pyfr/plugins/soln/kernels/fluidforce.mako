@@ -80,6 +80,10 @@
         fpdtype_t Trat = ${1.0/c['cpTref']}*cpT;
         fpdtype_t mu_c = ${c['mu']*(c['cpTref'] + c['cpTs'])}*Trat*sqrt(Trat)
                        / (cpT + ${c['cpTs']});
+    % elif visc_corr == 'power-law':
+        fpdtype_t cpT = ${c['gamma']}*(invrho*ufpt[${nvars - 1}]
+                      - 0.5*(${pyfr.dot('vel{i}', i=ndims)}));
+        fpdtype_t mu_c = ${c['mu']}*pow(${1.0/c['cpTref']}*cpT, ${c['muexp']});
     % else:
         fpdtype_t mu_c = ${c['mu']};
     % endif

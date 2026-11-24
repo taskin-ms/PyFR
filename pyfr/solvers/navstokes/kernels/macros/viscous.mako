@@ -25,6 +25,10 @@
     fpdtype_t Trat = ${1/c['cpTref']}*cpT;
     fpdtype_t mu_c = ${c['mu']*(c['cpTref'] + c['cpTs'])}*Trat*sqrt(Trat)
                    / (cpT + ${c['cpTs']});
+% elif visc_corr == 'power-law':
+    // Power-law viscosity mu = mu_ref*(T/Tref)^muexp
+    fpdtype_t cpT = ${c['gamma']}*(rcprho*E - 0.5*(u*u + v*v));
+    fpdtype_t mu_c = ${c['mu']}*pow(${1/c['cpTref']}*cpT, ${c['muexp']});
 % else:
     fpdtype_t mu_c = ${c['mu']};
 % endif
@@ -78,6 +82,10 @@
     fpdtype_t Trat = ${1/c['cpTref']}*cpT;
     fpdtype_t mu_c = ${c['mu']*(c['cpTref'] + c['cpTs'])}*Trat*sqrt(Trat)
                    / (cpT + ${c['cpTs']});
+% elif visc_corr == 'power-law':
+    // Power-law viscosity mu = mu_ref*(T/Tref)^muexp
+    fpdtype_t cpT = ${c['gamma']}*(rcprho*E - 0.5*(u*u + v*v + w*w));
+    fpdtype_t mu_c = ${c['mu']}*pow(${1/c['cpTref']}*cpT, ${c['muexp']});
 % else:
     fpdtype_t mu_c = ${c['mu']};
 % endif

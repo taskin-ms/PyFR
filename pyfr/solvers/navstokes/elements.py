@@ -16,9 +16,13 @@ class NavierStokesElements(BaseFluidElements, BaseAdvectionDiffusionElements):
         aux = super().auxvars(ndims, cfg)
         c = cfg.items_as('constants', float)
 
-        if cfg.get('solver', 'viscosity-correction', 'none') == 'sutherland':
+        visc_corr = cfg.get('solver', 'viscosity-correction', 'none')
+        if visc_corr == 'sutherland':
             m, tr, ts = c['mu'], c['cpTref'], c['cpTs']
             aux['mu'] = f'{m*(tr + ts)}*pow(cpT/{tr}, 1.5)/(cpT + {ts})'
+        elif visc_corr == 'power-law':
+            m, tr, n = c['mu'], c['cpTref'], c['muexp']
+            aux['mu'] = f'{m}*pow(cpT/{tr}, {n})'
         else:
             aux['mu'] = str(c['mu'])
 
@@ -37,9 +41,9 @@ class NavierStokesElements(BaseFluidElements, BaseAdvectionDiffusionElements):
         kprefix = 'pyfr.solvers.navstokes.kernels'
         self._be.pointwise.register(f'{kprefix}.tflux')
 
-        # Handle Sutherland's law
+        # Handle Sutherland's law and power-law viscosity
         visc_corr = self.cfg.get('solver', 'viscosity-correction', 'none')
-        if visc_corr not in {'sutherland', 'none'}:
+        if visc_corr not in {'sutherland', 'power-law', 'none'}:
             raise ValueError('Invalid viscosity-correction option')
 
         # Template parameters for the flux kernels
